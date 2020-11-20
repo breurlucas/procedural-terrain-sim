@@ -10,8 +10,10 @@ public class MeshScript : MonoBehaviour
     Vector3[] vertices;
     int[] indices;
 
-    public int xSize = 20;
-    public int zSize = 20;
+    public int xSize;
+    public int zSize;
+    public float amp1, amp2, amp3;
+    public float scale1, scale2, scale3;
 
     // Start is called before the first frame update
     void Start()
@@ -34,7 +36,8 @@ public class MeshScript : MonoBehaviour
         for (int i = 0, z = 0; z <= zSize; z++) {
             for (int x = 0; x <= xSize; x++) {
                 // Set y height
-                float y = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
+                // float y = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
+                 float y = CalculateNoise(x, z);
                  vertices[i] = new Vector3(x, y, z);   
                  i++;
             }
@@ -73,6 +76,16 @@ public class MeshScript : MonoBehaviour
         mesh.RecalculateBounds();
         MeshCollider meshCollider = gameObject.GetComponent<MeshCollider>();
         meshCollider.sharedMesh = mesh;
+    }
+
+    private float CalculateNoise(float x, float z)
+    {
+        float noise;
+        noise = Mathf.PerlinNoise(x, z) * 5;
+        noise += Mathf.PerlinNoise(x * amp1, z * amp1) * scale1;
+        noise -= Mathf.PerlinNoise(x * amp2, z * amp2) * scale2;
+        noise += Mathf.PerlinNoise(x * amp3, z * amp3) * scale3 * 2;
+        return noise;
     }
 
     // private void OnDrawGizmos() {
