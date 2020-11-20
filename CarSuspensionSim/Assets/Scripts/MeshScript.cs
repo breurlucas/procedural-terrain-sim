@@ -12,8 +12,8 @@ public class MeshScript : MonoBehaviour
 
     public int xSize;
     public int zSize;
-    public float amp1, amp2, amp3;
-    public float scale1, scale2, scale3;
+    public float noiseFreq1, noiseFreq2, noiseFreq3;
+    public float noiseAmp1, noiseAmp2, noiseAmp3;
 
     // Start is called before the first frame update
     void Start()
@@ -80,11 +80,9 @@ public class MeshScript : MonoBehaviour
 
     private float CalculateNoise(float x, float z)
     {
-        float noise;
-        noise = Mathf.PerlinNoise(x, z) * 5;
-        noise += Mathf.PerlinNoise(x * amp1, z * amp1) * scale1;
-        noise -= Mathf.PerlinNoise(x * amp2, z * amp2) * scale2;
-        noise += Mathf.PerlinNoise(x * amp3, z * amp3) * scale3 * 2;
+        float noise = Mathf.PerlinNoise(x * noiseFreq1, z * noiseFreq1) * noiseAmp1;
+        noise += Mathf.PerlinNoise(x * noiseFreq2, z * noiseFreq2) * noiseAmp2;
+        noise += Mathf.PerlinNoise(x * noiseFreq3, z * noiseFreq3) * noiseAmp3;
         return noise;
     }
 
