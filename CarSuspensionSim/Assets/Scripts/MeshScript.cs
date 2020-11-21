@@ -9,11 +9,18 @@ public class MeshScript : MonoBehaviour
 
     Vector3[] vertices;
     int[] indices;
+    Color[] colors;
 
     public int xSize;
     public int zSize;
     public float noiseFreq1, noiseFreq2, noiseFreq3;
     public float noiseAmp1, noiseAmp2, noiseAmp3;
+
+    public Gradient gradient;
+
+    float minTerrainHeight;
+    float maxTerrainHeight;
+
 
     // Start is called before the first frame update
     void Start()
@@ -39,6 +46,14 @@ public class MeshScript : MonoBehaviour
                 // float y = Mathf.PerlinNoise(x * .3f, z * .3f) * 2f;
                  float y = CalculateNoise(x, z);
                  vertices[i] = new Vector3(x, y, z);   
+
+                 // Set up height map
+                 if (y > maxTerrainHeight)
+                    maxTerrainHeight = y;
+
+                if (y < minTerrainHeight)
+                    minTerrainHeight = y;
+
                  i++;
             }
         }
@@ -64,6 +79,17 @@ public class MeshScript : MonoBehaviour
             xShift++;
         }
 
+        colors = new Color[vertices.Length];
+
+        for (int i = 0, z = 0; z <= zSize; z++) {
+            for (int x = 0; x <= xSize; x++) {
+                // Convert height to a value between 0 and 1
+                float height = Mathf.InverseLerp(minTerrainHeight, maxTerrainHeight, vertices[i].y);
+                 colors[i] = gradient.Evaluate(height);   
+                 i++;
+            }
+        }
+
     }
 
     void UpdateMesh() {
@@ -71,6 +97,7 @@ public class MeshScript : MonoBehaviour
 
         mesh.vertices = vertices;
         mesh.triangles = indices;
+        mesh.colors = colors;
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
