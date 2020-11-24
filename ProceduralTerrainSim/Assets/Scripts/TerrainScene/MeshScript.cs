@@ -3,12 +3,11 @@ using UnityEngine;
 
 // This script considers 3D coordinates x, y and z
 public class MeshScript {
-    public static Mesh GenerateMesh(float[,] noiseMap, int terrainHeight) {
+    public static IEnumerator GenerateMesh(Mesh mesh, float[,] noiseMap, int terrainHeight) {
         
         int xSize = noiseMap.GetLength(0);
         int zSize = noiseMap.GetLength(1);
 
-        Mesh mesh = new Mesh();
         int[] indices;
         Vector3[] vertices = new Vector3[xSize * zSize];
         // There is a max of 65535 vertices allowed in Unity before auto mesh splitting
@@ -43,11 +42,12 @@ public class MeshScript {
             xShift++;
         }
 
-        //mesh.Clear();
+        // mesh.Clear();
         mesh.vertices = vertices;
         mesh.triangles = indices;
         mesh.RecalculateNormals();
 
-        return mesh;
+        yield return null;
     }
+
 }

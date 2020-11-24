@@ -18,21 +18,52 @@ public class TerrainGenerator : MonoBehaviour
     public int terrainHeight;
     public bool autoUpdate;
 
-    public void GenerateMap() {
+    // Private variables
+    private Mesh mesh;
+    private float[,] noiseMap;
+    private ProceduralTerrain terrain;
 
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapDepth, seed, zoom, 
+    void Start() {
+        // Step 1: Generate noise map
+        noiseMap = Noise.GenerateNoiseMap(mapWidth, mapDepth, seed, zoom, 
         octaves, persistance, lacunarity, offset);
 
-        Mesh mesh = new Mesh();
-        mesh = MeshScript.GenerateMesh(noiseMap, terrainHeight);
+        // Step 2: Generate mesh
+        mesh = new Mesh();
+        MeshScript.GenerateMesh(mesh, noiseMap, terrainHeight);
 
-        ProceduralTerrain terrain = FindObjectOfType<ProceduralTerrain>();
+        // Step 3: Add mesh to the terrain game object
+        terrain = FindObjectOfType<ProceduralTerrain>();
         terrain.ApplyMesh(mesh);
 
+        // Step 4: Simulate erosion
         Erosion erosion = FindObjectOfType<Erosion>();
-        erosion.Simulate(noiseMap, terrainHeight);
-        mesh = MeshScript.GenerateMesh(noiseMap, terrainHeight);
+        StartCoroutine(erosion.Simulate(noiseMap, terrainHeight));
+    }
+
+    // Update the mesh on each frame
+    void Update() {
+        StartCoroutine(MeshScript.GenerateMesh(mesh, noiseMap, terrainHeight));
+    }
+
+    public void GenerateMap() {
+
+        // Step 1: Generate noise map
+        noiseMap = Noise.GenerateNoiseMap(mapWidth, mapDepth, seed, zoom, 
+        octaves, persistance, lacunarity, offset);
+
+        // Step 2: Generate mesh
+        mesh = new Mesh();
+        StartCoroutine(MeshScript.GenerateMesh(mesh, noiseMap, terrainHeight));
+
+        // Step 3: Add mesh to the terrain game object
+        terrain = FindObjectOfType<ProceduralTerrain>();
         terrain.ApplyMesh(mesh);
+
+        // Step 4: Simulate erosion
+        // Erosion erosion = FindObjectOfType<Erosion>();
+        // StartCoroutine(erosion.Simulate(noiseMap, terrainHeight));
+        // StartCoroutine(MeshScript.GenerateMesh(mesh, noiseMap, terrainHeight));
     }
 
     // Called automatically when script variables are changed in the inspector
