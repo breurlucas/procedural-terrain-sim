@@ -31,6 +31,8 @@ public class TerrainGenerator : MonoBehaviour
 
         Erosion erosion = FindObjectOfType<Erosion>();
         erosion.Simulate(noiseMap, terrainHeight);
+        mesh = MeshScript.GenerateMesh(noiseMap, terrainHeight);
+        terrain.ApplyMesh(mesh);
     }
 
     // Called automatically when script variables are changed in the inspector
