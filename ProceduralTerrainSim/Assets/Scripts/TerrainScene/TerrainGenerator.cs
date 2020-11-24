@@ -28,6 +28,9 @@ public class TerrainGenerator : MonoBehaviour
 
         ProceduralTerrain terrain = FindObjectOfType<ProceduralTerrain>();
         terrain.ApplyMesh(mesh);
+
+        Erosion erosion = FindObjectOfType<Erosion>();
+        erosion.Simulate(noiseMap, terrainHeight);
     }
 
     // Called automatically when script variables are changed in the inspector
