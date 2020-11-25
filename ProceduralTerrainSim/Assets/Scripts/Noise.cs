@@ -20,8 +20,8 @@ public class Noise {
         // Offset each octave by a random x and y coordinate
         Vector2[] octave0ffsets = new Vector2[octaves];
         for (int i = 0; i < octaves; i++) {
-            float offsetX = prng.Next(-100000, 100000) + offset.x;
-            float offsetY = prng.Next(-100000, 100000) + offset.y;
+            float offsetX = prng.Next(-1000, 1000) + offset.x;
+            float offsetY = prng.Next(-1000, 1000) + offset.y;
             octave0ffsets[i] = new Vector2(offsetX, offsetY);
         }
 

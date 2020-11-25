@@ -8,5 +8,4 @@ public class ProceduralTerrain : MonoBehaviour
     public void ApplyMesh(Mesh mesh) {
         GetComponent<MeshFilter>().mesh = mesh;
     }
-   
 }

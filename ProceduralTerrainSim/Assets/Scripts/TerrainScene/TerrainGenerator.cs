@@ -17,11 +17,15 @@ public class TerrainGenerator : MonoBehaviour
     public Vector2 offset;
     public int terrainHeight;
     public bool autoUpdate;
+    public bool enableRotation;
+    public int rotationSpeed = 100;
 
     // Private variables
     private Mesh mesh;
     private float[,] noiseMap;
     private ProceduralTerrain terrain;
+    private Vector3 center;
+    private GameObject cam;
 
     void Start() {
         // Step 1: Generate noise map
@@ -39,11 +43,18 @@ public class TerrainGenerator : MonoBehaviour
         // Step 4: Simulate erosion
         Erosion erosion = FindObjectOfType<Erosion>();
         StartCoroutine(erosion.Simulate(noiseMap, terrainHeight));
+        
+        center = new Vector3(noiseMap.GetLength(0) / 2f, 0, noiseMap.GetLength(0) / 2f);
+        cam = GameObject.Find("Main Camera");
     }
 
     // Update the mesh on each frame
     void Update() {
         StartCoroutine(MeshScript.GenerateMesh(mesh, noiseMap, terrainHeight));
+
+        // Rotate the camera around the terrain
+        if (enableRotation)
+            cam.transform.RotateAround(center, Vector3.up, rotationSpeed * Time.deltaTime);
     }
 
     public void GenerateMap() {
