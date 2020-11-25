@@ -144,35 +144,45 @@ public class Erosion : MonoBehaviour {
                     sediment += volErosion;
 
                     // Calculate the number of vertices to be eroded based off the pErosionRadius
-                    int erosionAreaBase = 1 + (int)Mathf.Pow(2, pErosionRadius - 1);
+                    int erosionAreaBase = 2 * pErosionRadius - 1;
                     int nrOfVertices = (erosionAreaBase + 1) * (erosionAreaBase + 1);
 
                     // Weights for determining erosion levels based off distance to droplet
                     float[] weights = new float[nrOfVertices];
                     Vector2[] vertices = new Vector2[nrOfVertices];
 
-                    int[] vertex = new int[2];
+                    // Start at the bottom left cell of the erosion area
                     int xOffset = cellX00 - pErosionRadius + 1;
                     int zOffset = cellZ00 - pErosionRadius + 1;
+
+                    // Initialize the total magnitude of the vertices weights as 0
                     float weightsMagnitude = 0;
 
                     for (int i =0, x = 0; x <= erosionAreaBase; x++) {
                         for(int z = 0; z <= erosionAreaBase; z++) {
                             vertices[i].x = xOffset + x;
                             vertices[i].y = zOffset + z;
-                            float distance = Mathf.Sqrt(Mathf.Pow((posPrevious[0] - vertices[i].x), 2) + Mathf.Pow((posPrevious[1] - vertices[i].y), 2)); 
-                            weights[i] = Mathf.Max(0, pErosionRadius - distance); 
-                            weightsMagnitude += weights[i];
+
+                            // If not within map boundaries, skip
+                            if (vertices[i].x >= 0 && vertices[i].x < map.GetLength(0) - 1 &&
+                            vertices[i].y >= 0 && vertices[i].y < map.GetLength(0) - 1 ) {
+                                float distance = Mathf.Sqrt(Mathf.Pow((posPrevious[0] - vertices[i].x), 2) + Mathf.Pow((posPrevious[1] - vertices[i].y), 2)); 
+                                weights[i] = Mathf.Max(0, pErosionRadius - distance); 
+                                weightsMagnitude += weights[i];
+                            }
                             i++;
                         }
                     }
 
                     for (int i = 0; i < nrOfVertices; i++) {
-                        weights[i] /= weightsMagnitude;
+                        // If not within map boundaries, skip
                         if (vertices[i].x >= 0 && vertices[i].x < map.GetLength(0) - 1 &&
-                            vertices[i].y >= 0 && vertices[i].y < map.GetLength(0) - 1 ) 
+                            vertices[i].y >= 0 && vertices[i].y < map.GetLength(0) - 1 ) {
 
+                            weights[i] /= weightsMagnitude;
                             map[(int)vertices[i].x, (int)vertices[i].y] -= weights[i] * volErosion;
+                        }
+
                     }
                 }
 
